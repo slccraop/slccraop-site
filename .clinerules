@@ -1,0 +1,77 @@
+# SLCCRAOP: rules for Cline
+# This file is READ-ONLY for Cline. Never edit, rename, move, overwrite or delete it.
+
+## 1. Read first, every session
+1. Read E:\SLCCRAOP\.clinerules (this file), then E:\SLCCRAOP\loop.md, then E:\SLCCRAOP\SLCCRAOP_BUILD_MANUAL.md, then open E:\SLCCRAOP\SLCCRAOP_FRONTEND_DESIGN.html when working on UI.
+2. The build manual is the specification. If it conflicts with these rules, these rules win. If anything is ambiguous or missing, ask the owner (see section 6). Never guess.
+
+## 2. Protected files (read-only)
+Everything directly in E:\SLCCRAOP, except the site folder, is READ-ONLY. This includes:
+.clinerules, loop.md, SLCCRAOP_BUILD_MANUAL.md, SLCCRAOP_FRONTEND_DESIGN.html and any other file the owner adds to the root.
+- You may read them. You may copy them into the site folder. You may never change the originals.
+- You may write ONLY inside E:\SLCCRAOP\slccraop-site\ (create it as your first task). Never write, delete, rename or create anything elsewhere on E: or any other drive, except package caches created automatically by npm.
+- Before any write, delete, move or rename, check that the full resolved path starts with E:\SLCCRAOP\slccraop-site\. If it does not, stop.
+- If a task seems to require changing a protected file, stop and ask the owner. Record needed changes in slccraop-site\docs\REQUESTED_CHANGES.md instead.
+- Progress tracking is NOT done in loop.md. Use slccraop-site\docs\PROGRESS.md.
+
+## 3. PowerShell only
+- Run every command in Windows PowerShell. Never use bash, cmd, WSL, Git Bash or Unix-only commands (no rm -rf, touch, cat, grep, sed, export, &&-chains written for bash).
+- First command of every session: $PSVersionTable.PSVersion ; Get-Location. If the shell is not PowerShell, stop and tell the owner to set the VS Code default terminal profile to PowerShell.
+- Use PowerShell cmdlets and Windows paths (Set-Location, New-Item, Get-Content, Copy-Item, Test-Path, Remove-Item). Quote paths. Do not run elevated or change system settings, execution policy, PATH or registry.
+- Any script you write for the project must run in Windows PowerShell (.ps1) and be committed inside the site folder. Do not create bash scripts.
+- Never run destructive commands (Remove-Item -Recurse -Force, git reset --hard, git push --force, DROP/TRUNCATE) without owner approval. Never delete anything outside the site folder, ever.
+
+## 4. Technology (decided, do not change without the owner)
+TypeScript, React, Vite, Tailwind CSS, react-i18next, Zod. Supabase (Postgres, Auth, Storage, Edge Functions) as the backend. Static front end intended for Cloudflare Pages. Cloudflare Turnstile for bot protection. Java and other server stacks are not used because they need a paid always-on server.
+Use SLCCRAOP_FRONTEND_DESIGN.html as the visual source of truth: copy it into the site folder, rebuild it as components, keep its look, and extend it to every page and state in the manual.
+
+## 5. Non-negotiables (from the manual, restated)
+- Fake data only, marked FAKE. Never real victim, suspect or case data, never real keys in the repo.
+- No names, images, links, phone numbers or submitter text on any public page or API.
+- Never store, view, download or archive sexual content involving a minor.
+- Secrets, the Supabase service-role key and API keys never go in the front end, the repo, logs or .env.example. Provide .env.example with names only.
+- Never disable RLS, never write using (true) on a private table, never take roles from user-editable metadata.
+- All permissions are enforced in RLS and Edge Functions. All input is validated server-side with Zod.
+- Never invent hotlines, emails, laws, statistics or legal text. Use [VERIFY] or [LEGAL REVIEW] placeholders.
+- Do not add a dependency without checking it exists, is maintained and is needed, and logging it in docs\DECISIONS.md. Pin versions.
+- No mocks, swallowed errors, TODOs or placeholder text in finished work.
+- Dates stored in UTC, displayed in Asia/Colombo. Text in English, Sinhala and Tamil through translation files only.
+
+## 6. Asking the owner
+- Ask only when a decision is not answered by the manual, loop or design file, or when you need an asset (logo, banner, brand colours, favicon, real contact details, account keys).
+- Batch questions: ask all open questions for the current task at once, state your recommended default, and explain the choice in one plain sentence. Do not ask technical questions the owner cannot judge; decide, and record it in docs\DECISIONS.md.
+- Never create placeholder logos or banners to ship. Use a clearly marked temporary text placeholder and ask for the real asset.
+
+## 7. Working method
+- One task at a time, in the order in loop.md. Stop at every GATE and wait for the owner's go-ahead.
+- After each task run: lint, typecheck, tests, build (via npm scripts in PowerShell). Fix failures. Do not mark a task done unless they pass.
+- Commit locally with a conventional message after each task (git init inside the site folder). Do not push or add remotes.
+- End every task with an honest report in docs\PROGRESS.md: done, commands run and results, anything failed or unverified, decisions made. Never claim something works unless you ran it.
+- Stay inside the current task. No extra features, no changes to privacy or security rules.
+- Write code like a careful human developer: domain names, one pattern per concern, comments that explain why, no dead code, a real README.
+
+
+## 8. WORKLIST PROTOCOL v1 (authoritative task memory)
+The files in slccraop-site\worklist (WL-0001.txt ...) and slccraop-site\verifylist (VL-0001.txt ...) are the ONLY record of what is planned and what is done. Your memory, the chat history and PROGRESS.md are NOT evidence. If they disagree with the files, the files win.
+
+Tool: E:\SLCCRAOP\worklist.ps1 (read-only; never edit, copy over, bypass or recreate it). Run it only from PowerShell:
+  .\worklist.ps1 -Action Status      counts, integrity audit, unresolved failures, next item
+  .\worklist.ps1 -Action Next        prints the next startable work item
+  .\worklist.ps1 -Action NewWork -Id N -Title '...' -Ref '...' -Description '...' -Done '...' [-Depends 1,2] [-ReworkOf N]
+  .\worklist.ps1 -Action NewVerify -Id N -Result PASS|PARTIAL|FAIL -Summary '...' -Evidence '...'
+  .\worklist.ps1 -Action Audit       integrity check (hash chain and read-only flags)
+Use single-quoted strings for text arguments. Do not use backticks.
+
+Rules:
+1. Create work items and verify items ONLY with worklist.ps1. Never by hand, never with Set-Content, Out-File, New-Item, redirection or an editor.
+2. WL and VL files are write-once and unique. Never edit, append to, overwrite, rename, move, delete, copy over, or change the attributes or permissions of any of them. Never clear the read-only flag. Never use attrib, icacls, Set-ItemProperty or similar on them or on the worklist and verifylist folders.
+3. A mistake in a WL or VL is never edited. Create a new work item with -ReworkOf.
+4. One work item = one outcome that can be checked. Short but specific. "Definition of done" must list observable checks: the commands to run and the output or file that proves it. Vague items such as "build the backend" are not allowed.
+5. Never do work that has no WL. If you find missing work, create a new WL first (use -Depends to order it), then do it.
+6. Cycle for every item: (a) Status, (b) Next, (c) do only that item, (d) run every check in its definition of done in PowerShell, (e) NewVerify. Use PASS only if every check was actually run and passed; otherwise PARTIAL or FAIL. Evidence must list the exact commands run, their outcomes, and the files created or changed. (f) Audit.
+7. Never say an item is planned, started or done without citing its WL and VL numbers. Never batch several items into one verify.
+8. GATE items are their own work items. Their verify Evidence must quote the owner's approval message. Do not pass a GATE without it.
+9. At the start of every session, after any interruption or context loss, and whenever unsure, run Status first and trust only its output.
+10. If Status or Audit reports a problem, stop all work, show the output to the owner and wait.
+11. Owner questions and asset requests (logo, banner, keys, decisions) are work items too. Record the owner's answer in that item's verify Evidence and in docs\DECISIONS.md.
+12. Keep WL and VL text short. Do not paste code into them; refer to file paths.

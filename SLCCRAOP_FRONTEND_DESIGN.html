@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLCCRAOP | Public case ledger</title>
+<!--
+  DESIGN REFERENCE ONLY. Cline: copy this into the site folder and rebuild it as React components.
+  - Keep the look: colours, spacing, type scale, the stage track in each row, the ticker strip.
+  - All data below is FAKE. Never ship it. Real rows come from the public_ledger table.
+  - Fonts: self-host Noto Sans, Noto Sans Sinhala, Noto Sans Tamil. No CDN fonts.
+  - Logo is a text placeholder. Ask the owner for a real logo.
+-->
+<style>
+:root{
+  --ink:#16202c; --muted:#4f5b6b; --paper:#f2f4f7; --card:#ffffff; --rule:#d3d9e1;
+  --signal:#1f5fbf; --wait:#9a6410; --done:#256b4d; --shut:#5d6673; --warn-bg:#fff4dc;
+  --r:6px; --s1:.5rem; --s2:1rem; --s3:1.5rem; --s4:2.5rem;
+}
+@media (prefers-color-scheme:dark){
+  :root{--ink:#e8edf3; --muted:#a3afbe; --paper:#101720; --card:#18212d; --rule:#2c3745;
+  --signal:#7aa8f2; --wait:#e0b060; --done:#6fc79e; --shut:#9aa5b3; --warn-bg:#33290f;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:16px/1.6 "Noto Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+a{color:var(--signal)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 var(--s2)}
+header{border-bottom:1px solid var(--rule);background:var(--card)}
+header .wrap{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center;justify-content:space-between;padding-top:var(--s2);padding-bottom:var(--s2)}
+.brand{font-weight:700;font-size:1.25rem;letter-spacing:.01em;text-decoration:none;color:var(--ink)}
+.brand small{display:block;font-weight:400;font-size:.8rem;color:var(--muted)}
+nav{display:flex;gap:var(--s2);flex-wrap:wrap;align-items:center}
+nav a{color:var(--ink);text-decoration:none}
+nav a:hover{text-decoration:underline}
+.lang button{font:inherit;background:none;border:1px solid var(--rule);color:var(--ink);padding:.2rem .6rem;border-radius:var(--r);cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.notice{background:var(--warn-bg);border-bottom:1px solid var(--rule);font-size:.92rem}
+.notice .wrap{padding-top:.6rem;padding-bottom:.6rem}
+h1{font-size:clamp(1.7rem,4vw,2.5rem);line-height:1.2;margin:var(--s4) 0 var(--s1);max-width:22ch}
+.lede{max-width:62ch;color:var(--muted);margin:0 0 var(--s3)}
+.cta{display:flex;flex-wrap:wrap;gap:var(--s2);margin-bottom:var(--s4)}
+.btn{display:inline-block;padding:.75rem 1.25rem;border-radius:var(--r);font-weight:600;text-decoration:none;border:2px solid var(--ink)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.secondary{background:transparent;color:var(--ink)}
+.ticker{display:flex;flex-wrap:wrap;border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);background:var(--card);margin-bottom:var(--s4)}
+.ticker div{flex:1 1 130px;padding:var(--s2);border-right:1px solid var(--rule)}
+.ticker div:last-child{border-right:0}
+.ticker b{display:block;font-size:1.9rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.ticker span{font-size:.85rem;color:var(--muted)}
+.ticker .asof{flex:1 1 100%;border:0;border-top:1px solid var(--rule);font-size:.8rem;color:var(--muted);padding:.4rem var(--s2)}
+h2{font-size:1.4rem;margin:0 0 var(--s1)}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--s1);margin:var(--s2) 0}
+.filters label{display:block;font-size:.85rem;color:var(--muted)}
+.filters input,.filters select{width:100%;font:inherit;padding:.55rem;border:1px solid var(--rule);border-radius:var(--r);background:var(--card);color:var(--ink)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--rule)}
+th,td{text-align:left;padding:.75rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:.85rem;color:var(--muted);font-weight:600;border-bottom:2px solid var(--ink)}
+td.id{font-weight:700;white-space:nowrap}
+.track{display:inline-flex;gap:3px;vertical-align:middle;margin-right:.4rem}
+.track i{width:14px;height:6px;background:var(--rule);border-radius:2px}
+.track i.on{background:var(--signal)}
+.track.wait i.on{background:var(--wait)}
+.track.done i.on{background:var(--done)}
+.track.shut i.on{background:var(--shut)}
+.fake{font-size:.78rem;color:var(--wait)}
+.pager{display:flex;justify-content:space-between;align-items:center;margin:var(--s2) 0 var(--s4);color:var(--muted);font-size:.9rem}
+footer{border-top:1px solid var(--rule);background:var(--card);padding:var(--s3) 0;font-size:.88rem;color:var(--muted)}
+footer ul{list-style:none;display:flex;flex-wrap:wrap;gap:var(--s2);padding:0;margin:var(--s1) 0 0}
+.sr{position:absolute;left:-9999px}
+@media (max-width:760px){
+  .filters{grid-template-columns:1fr}
+  .ticker div{border-right:0;border-bottom:1px solid var(--rule)}
+  thead{position:absolute;left:-9999px}
+  table,tbody,tr,td{display:block}
+  tr{border-bottom:2px solid var(--ink);padding:.5rem 0}
+  td{border:0;padding:.25rem .75rem}
+  td::before{content:attr(data-label);display:block;font-size:.78rem;color:var(--muted)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<a class="sr" href="#ledger">Skip to the case ledger</a>
+<header>
+  <div class="wrap">
+    <a class="brand" href="#">SLCCRAOP<small>Sri Lanka Cyber Crime Registry and Accountability Oversight Project</small></a>
+    <nav aria-label="Main">
+      <a href="#">How it works</a><a href="#">Methodology</a><a href="#">Get help now</a>
+      <span class="lang" role="group" aria-label="Language">
+        <button aria-pressed="true">EN</button><button aria-pressed="false">සිං</button><button aria-pressed="false">தமிழ்</button>
+      </span>
+    </nav>
+  </div>
+</header>
+<div class="notice" role="note"><div class="wrap">
+  <strong>Reports are open.</strong> We review them in the order received. If someone is in immediate danger, contact the police first.
+</div></div>
+
+<main class="wrap">
+  <h1>See how each reported case moves through the authorities.</h1>
+  <p class="lede">We help people report online sexual abuse and non-consensual sharing of images, pass verified cases to the right authority, and show every authority's progress here. No names, images or personal details are ever published.</p>
+  <div class="cta">
+    <a class="btn primary" href="#">Report an incident</a>
+    <a class="btn secondary" href="#">Add evidence to my report</a>
+  </div>
+
+  <section class="ticker" aria-label="Overall progress">
+    <div><b>128</b><span>Cases sent to authorities</span></div>
+    <div><b>71</b><span>Awaiting a reply</span></div>
+    <div><b>39</b><span>Under investigation</span></div>
+    <div><b>11</b><span>Closed, resolved</span></div>
+    <div><b>7</b><span>Closed, unresolved</span></div>
+    <div><b>9 days</b><span>Median time to first reply</span></div>
+    <div class="asof">Last updated 10 Nov 2026, 14:30. Sample figures, not real data.</div>
+  </section>
+
+  <section id="ledger" aria-labelledby="lt">
+    <h2 id="lt">Public case ledger</h2>
+    <p class="fake">Sample rows for design only.</p>
+    <form class="filters" role="search" onsubmit="return false">
+      <div><label for="q">Search case ID or summary</label><input id="q" type="search"></div>
+      <div><label for="c">Category</label><select id="c"><option>All</option></select></div>
+      <div><label for="a">Authority</label><select id="a"><option>All</option></select></div>
+      <div><label for="s">Status</label><select id="s"><option>All</option></select></div>
+    </form>
+    <table>
+      <thead><tr><th>Case</th><th>Category and summary</th><th>Authority</th><th>Status</th><th>Latest reply</th></tr></thead>
+      <tbody>
+        <tr><td class="id" data-label="Case">SL-2026-0042</td>
+          <td data-label="Category and summary">Non-consensual sharing of images<br>Images shared in a closed group without consent.</td>
+          <td data-label="Authority">CCID</td>
+          <td data-label="Status"><span class="track wait" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>Submitted, awaiting reply</td>
+          <td data-label="Latest reply">No reply yet<br><small>Sent 2 Nov 2026</small></td></tr>
+        <tr><td class="id" data-label="Case">SL-2026-0037</td>
+          <td data-label="Category and summary">Sextortion<br>Threats to release images unless money is paid.</td>
+          <td data-label="Authority">CCID</td>
+          <td data-label="Status"><span class="track" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>Under investigation</td>
+          <td data-label="Latest reply">Action in progress<br><small>6 Nov 2026</small></td></tr>
+        <tr><td class="id" data-label="Case">SL-2026-0029</td>
+          <td data-label="Category and summary">Online sexual harassment<br>Repeated unwanted sexual messages and fake profiles.</td>
+          <td data-label="Authority">SLCERT</td>
+          <td data-label="Status"><span class="track done" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>Closed, resolved</td>
+          <td data-label="Latest reply">Closed by authority<br><small>28 Oct 2026</small></td></tr>
+        <tr><td class="id" data-label="Case">SL-2026-0018</td>
+          <td data-label="Category and summary">Non-consensual sharing of images<br>Content reposted across several pages.</td>
+          <td data-label="Authority">CCID</td>
+          <td data-label="Status"><span class="track shut" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>Closed, unresolved: suspect not identified</td>
+          <td data-label="Latest reply">Closed by authority<br><small>19 Oct 2026</small></td></tr>
+      </tbody>
+    </table>
+    <div class="pager"><span>Showing 1 to 4 of 128 cases</span><span><a href="#">Previous</a> &nbsp; <a href="#">Next</a></span></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  SLCCRAOP is an independent civil-society project. It is not part of, endorsed by, or acting for any government body or police force.
+  <ul><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li><li><a href="#">Consent and withdrawal</a></li><li><a href="#">Request a correction or removal</a></li><li><a href="#">Contact</a></li></ul>
+</div></footer>
+</body>
+</html>
