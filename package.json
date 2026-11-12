@@ -20,6 +20,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "@tailwindcss/postcss": "^4.3.5",
     "autoprefixer": "^10.6.2",
     "eslint": "^10.0.0",
     "postcss": "^8.5.32",
