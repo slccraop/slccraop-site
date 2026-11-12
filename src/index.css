@@ -1,0 +1,322 @@
+/*!
+  SLCCRAOP Design System - CSS Variables
+  Based on SLCCRAOP_FRONTEND_DESIGN.html
+  Fonts: Noto Sans, Noto Sans Sinhala, Noto Sans Tamil
+*/
+:root {
+  --ink: #16202c;
+  --muted: #4f5b6b;
+  --paper: #f2f4f7;
+  --card: #ffffff;
+  --rule: #d3d9e1;
+  --signal: #1f5fbf;
+  --wait: #9a6410;
+  --done: #256b4d;
+  --shut: #5d6673;
+  --warn-bg: #fff4dc;
+  --r: 6px;
+  --s1: .5rem;
+  --s2: 1rem;
+  --s3: 1.5rem;
+  --s4: 2.5rem;
+}
+
+@media (prefers-color-scheme:dark) {
+  :root {
+    --ink: #e8edf3;
+    --muted: #a3afbe;
+    --paper: #101720;
+    --card: #18212d;
+    --rule: #2c3745;
+    --signal: #7aa8f2;
+    --wait: #e0b060;
+    --done: #6fc79e;
+    --shut: #9aa5b3;
+    --warn-bg: #33290f;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.6 "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", system-ui, sans-serif;
+}
+
+a {
+  color: var(--signal);
+}
+
+.focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* Ticker */
+.ticker {
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  background: var(--card);
+  margin-bottom: var(--s4);
+}
+
+.ticker div {
+  flex: 1 1 130px;
+  padding: var(--s2);
+  border-right: 1px solid var(--rule);
+}
+
+.ticker div:last-child {
+  border-right: 0;
+}
+
+.ticker b {
+  display: block;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker span {
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.ticker .asof {
+  flex: 1 1 100%;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  font-size: .8rem;
+  color: var(--muted);
+  padding: .4rem var(--s2);
+}
+
+/* Filters */
+.filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--s1);
+  margin: var(--s2) 0;
+}
+
+.filters label {
+  display: block;
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  font: inherit;
+  padding: .55rem;
+  border: 1px var(--rule);
+  border-radius: var(--r);
+}
+
+/* Track indicators */
+.track {
+  display: inline-flex;
+  align-items: center;
+}
+
+.track span {
+  margin-right: .25rem;
+}
+
+.track span:first-child {
+  margin-left: 0;
+}
+
+.track i {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+}
+
+.track .on {
+  color: var(--signal);
+}
+
+.track.wait i.on {
+  color: var(--wait);
+}
+
+.track.done i.on {
+  color: var(--done);
+}
+
+.track.shut i.on {
+  color: var(--shut);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: .75rem 1.25rem;
+  border-radius: var(--r);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+}
+
+.btn.primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn.secondary {
+  background: transparent;
+  color: var(--ink);
+}
+
+/* Layout */
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--s2);
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--s1);
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: var(--s1) 0;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+td {
+  color: var(--ink);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+/* Pager */
+.pager {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s4);
+}
+
+.pager a {
+  color: var(--signal);
+  text-decoration: none;
+}
+
+.pager a:hover {
+  text-decoration: underline;
+}
+
+/* Header */
+header {
+  border-bottom: 1px solid var(--rule);
+  background: var(--card);
+}
+
+header .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--s2);
+  padding-bottom: var(--s2);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: .01em;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand small {
+  display: block;
+  font-weight: 400;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+nav {
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+nav a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Notice */
+.notice {
+  background: var(--warn-bg);
+  border-bottom: 1px solid var(--rule);
+  font-size: .92rem;
+}
+
+.notice .wrap {
+  padding-top: .6rem;
+  padding-bottom: .6rem;
+}
+
+/* Headings */
+h1 {
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  line-height: 1.2;
+  margin: var(--s4) 0 var(--s1);
+  max-width: 22ch;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin: 0 0 var(--s1);
+}
+
+/* Lede */
+.lede {
+  max-width: 62ch;
+  color: var(--muted);
+  margin: 0 0 var(--s3);
+}
+
+/* CTA */
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-bottom: var(--s4);
+}
